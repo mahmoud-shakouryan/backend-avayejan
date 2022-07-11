@@ -27,15 +27,31 @@ const payRouter = express.Router();
 // }))
 
 
-payRouter.post('/', expressAsyncHandler((req, res)=>{
+// payRouter.post('/',isAuth,  expressAsyncHandler((req, res)=>{
+//     console.log('umad pay');
+//     const params = { 'order_id': `${req.body.videoId}`, 'amount': req.body.price, 'callback': 'http://localhost:5000/api/pay/callback', 'desc':`${req.body.videoId}` };
+//     axios.post('https://api.idpay.ir/v1/payment', params, {headers:{ 'Content-Type': 'application/json',  'X-API-KEY': '8140f12b-92de-4dac-b720-9b2e8dd8b6ec'}})
+//     .then(response =>{
+//         console.log('resposnse from zarinpal request>>>>>', response);
+//         const newPayment = new Payment({ user: req.user, amount: req.body.price, resNumber: response.data.data.authority});
+//         newPayment.save().then(result=>{
+//             return res.redirect(`https://www.zarinpal.com/pg/StartPay/${response.data.data.authority}`)
+//         })
+//         .catch(err=> console.log('new payment error'));
+//     })
+//     .catch(err=>{
+//         console.log('axios post requset error', err)
+//     })
+// }))
+payRouter.post('/',isAuth,  expressAsyncHandler((req, res)=>{
     console.log('umad pay');
-    const params = { merchant_id: '1b339e9c-96eb-4761-93b5-0426f0dee81a', amount: req.body.price, callback_url: 'http://localhost:5000/api/pay/callback', description:`${req.body.videoId}` };
-    axios.post('https://api.zarinpal.com/pg/v4/payment/request.json', params, {headers:{'Content-Type': 'application/json'}})
+    const params = { 'order_id': `${req.body.videoId}`, 'amount': req.body.price, 'callback': 'http://localhost:3000/myvideos', 'desc':`${req.body.videoId}` };
+    axios.post('https://api.idpay.ir/v1/payment', params, {headers:{ 'Content-Type': 'application/json',  'X-API-KEY': '8140f12b-92de-4dac-b720-9b2e8dd8b6ec', 'X-SANDBOX': true}})
     .then(response =>{
-        console.log('resposnse from zarinpal request>>>>>', response);
-        const newPayment = new Payment({ user: req.body.userId, amount: req.body.price, resNumber: response.data.data.authority});
+        console.log('resposnse from idPay request>>>>>', response);
+        const newPayment = new Payment({ user: req.user, amount: req.body.price, paymentId: response.data.id, paymentLink: response.data.link});
         newPayment.save().then(result=>{
-            return res.redirect(`https://www.zarinpal.com/pg/StartPay/${response.data.data.authority}`)
+            return res.send({ link: response.data.link})
         })
         .catch(err=> console.log('new payment error'));
     })
