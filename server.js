@@ -12,7 +12,6 @@ import payRouter from './routes/payRouter.js';
 
 const app = express();
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -20,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const MONGODB_URI = 'mongodb+srv://avayejaan:avayejaan1886181170@cluster0.kj3hf.mongodb.net/?retryWrites=true&w=majority';  //avayejaan avayejaan1886181170      mahmoud-shakouryan TarYDvaALJVMQ8w   //mongodb+srv://<username>:<password>@cluster0.kj3hf.mongodb.net/?retryWrites=true&w=majority
 
- app.use(cors({maxAge:1728000}));
+ app.use(cors());
 
 
 app.use('/api/videos', videoRouter);
