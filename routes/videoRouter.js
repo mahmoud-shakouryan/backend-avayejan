@@ -1,10 +1,9 @@
 import axios from 'axios';
-import express from 'express';
+import express, { response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import {data} from '../data.js';
 import Payment from '../models/payment.js';
 import User from '../models/user.js';
-import { S3Client, GetObjectCommand, PutBucketCorsCommand, GetBucketCorsCommand  } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { formatUrl } from '@aws-sdk/util-format-url';
@@ -13,13 +12,6 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 
 
 const videoRouter = express.Router();
-
-
-videoRouter.get('/', expressAsyncHandler(async (req, res) =>{
-    const videos = data;
-    res.send(videos);
-}));
-    
 
 videoRouter.post('/dllist', expressAsyncHandler(async (req, res)=>{
     const { status, order_id, userId, payId } = req.body;
@@ -76,38 +68,33 @@ videoRouter.post('/listtoget', expressAsyncHandler(async(req, res) =>{
     const linksArr = [];
     for( let fileIndex in fileNameInBucket){
         console.log(fileIndex)
-            const s3 = new S3Client({ region: 'default', endpoint: 'https://s3.ir-thr-at1.arvanstorage.com', forcePathStyle: false, credentials: { accessKeyId: 'cd642d50-c891-4f1c-9d62-3c929e5b7e5c', secretAccessKey: '46c4b12ed300a4e49cfa8fc86d424c5f10137963feaf1655782750134996bbc9' }});
-        const clientParams = {
-            Bucket: 'avayejan',
-            Key: fileNameInBucket[fileIndex].title,
-        };
-        console.log(fileNameInBucket[fileIndex].title)
+        const s3 = new S3Client({ region: 'default', endpoint: 'https://s3.ir-thr-at1.arvanstorage.com', forcePathStyle: false, credentials: { accessKeyId: 'cd642d50-c891-4f1c-9d62-3c929e5b7e5c', secretAccessKey: '46c4b12ed300a4e49cfa8fc86d424c5f10137963feaf1655782750134996bbc9' }});
+        const clientParams = { Bucket: 'avayejan', Key: fileNameInBucket[fileIndex].title };
         const signedRequest = new S3RequestPresigner(s3.config);
-            try {
-                const request = await createRequest(s3, new GetObjectCommand(clientParams));
-                const signedUrl = formatUrl( await signedRequest.presign(request, { expiresIn: 60 * 60 * 24 }));
-                //console.log(`download url: ${signedUrl}`);
-                linksArr.push(signedUrl);
-                console.log(linksArr)
-            } catch (err) {
-                console.log('Error creating presigned URL', err);
-            }
+        try {
+            const request = await createRequest(s3, new GetObjectCommand(clientParams));
+            const signedUrl = formatUrl( await signedRequest.presign(request, { expiresIn: 60 * 60 * 24 }));
+            linksArr.push(signedUrl);
+        } catch (err) {
+            console.log('Error creating presigned URL', err);
+        }
         }
         return res.send(linksArr);
-    
 }))
 
 
 
-videoRouter.get('/:id', expressAsyncHandler(async (req, res) => {
-    const video = data.find(a => a.id == req.params.id);
-    if(video){
-        return res.send(video);
-    }
-    else{
-        res.status(404).json({ message: 'این ویدیو وجود ندارد'})
-    }
-}))
+// videoRouter.get('/:id', expressAsyncHandler(async (req, res) => {
+//     console.log('umad', req.params.id)
+//     const video = data.find(a => a.id == req.params.id);
+//     console.log(video)
+//     if(video){
+//         return res.send(video);
+//     }
+//     else{
+//         res.status(404).json({ message: 'این ویدیو وجود ندارد'})
+//     }
+// }))
 
 
 
