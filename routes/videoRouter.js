@@ -1,5 +1,5 @@
 import axios from 'axios';
-import express, { response } from 'express';
+import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Payment from '../models/payment.js';
 import User from '../models/user.js';
