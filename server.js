@@ -1,9 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import videoRouter from './routes/videoRouter.js';
 import userRouter from './routes/userRouter.js';
 import payRouter from './routes/payRouter.js';
+import myVidsLinksRouter from './routes/videoRouter.js';
 
 
 
@@ -22,7 +22,7 @@ const MONGODB_URI = 'mongodb+srv://avayejaan:avayejaan1886181170@cluster0.kj3hf.
  app.use(cors());
 
 
-app.use('/api/videos', videoRouter);
+app.use('/api/videos', myVidsLinksRouter);
 app.use('/api/users', userRouter);
 app.use('/api/pay', payRouter);
 
