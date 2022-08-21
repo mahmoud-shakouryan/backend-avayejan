@@ -21,16 +21,22 @@ userRouter.post('/signin', expressAsyncHandler(async (req, res) =>{
         return res.status(401).send({ message: 'ایمیل در سیستم پیدا نشد'})
     }
     else if(user){
-        const token = jwt.sign({ _id: user._id, name: user.name, email: user.email }, process.env.JWT_SECRET || 'somethingsupersupersecret', { expiresIn: '30d' });
-        if( bcrypt.compareSync(req.body.password, user.password )){
-            return res.send({ _id: user._id, name: user.name, email: user.email, paidVidIds: user.paidVidIds, token: token })
+        if(req.body.password.length > 20){
+            console.log('umad tu req.body.password.length > 20')
+            return res.send({ _id: user._id, name: user.name, email: user.email, paidVidIds: user.paidVidIds, token: req.body.password})
         }
-        else if(!bcrypt.compareSync(req.body.password, user.password )){
-            return res.status(401).send({ message: 'پسوورد اشتباه است'})
+        else{
+            console.log('umad tu req.body.password.length < 20')
+            const token = jwt.sign({ _id: user._id, name: user.name, email: user.email }, process.env.JWT_SECRET || 'somethingsupersupersecret', { expiresIn: '30d' });
+            if( bcrypt.compareSync(req.body.password, user.password )){
+                return res.send({ _id: user._id, name: user.name, email: user.email, paidVidIds: user.paidVidIds, token: token })
+            }
+            else if(!bcrypt.compareSync(req.body.password, user.password )){
+                return res.status(401).send({ message: 'پسوورد اشتباه است'})
+        }
         }
    
     }
-    // res.status(401).json({ message:'invalid email or password '});
 }));
 
 
