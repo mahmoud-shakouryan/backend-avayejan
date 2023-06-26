@@ -54,7 +54,8 @@ userRouter.post(
       .withMessage("لطفا ایمیل معتبر وارد کنید")
       .custom(async (value, { req }) => {
         const user = await User.find({ email: req.body.email });
-        if (user) {
+        console.log("user signup >>>>>>>>>>>>>>>>>>>>>>>>>>>", user);
+        if (user.length > 0) {
           throw new Error("email exists!");
         }
       })
