@@ -39,11 +39,13 @@ adminRouter.get(
     switch (timeRange) {
       case "all":
         if (buyRange === "purchased_and_not_purchased") {
-          // const users = await User.find({});
+          // const users = await User.find({Shimazatdarvish@gmail.com});
           // return res.status(200).send(users);
-          const user = await User.find({ email: "dd@dd.com" });
-          user[0].paysSoFar = 0;
-          user[0].paidVidIds = [];
+          const user = await User.find({
+            email: "dd@dd.com",
+          });
+          // user[0].paysSoFar = 690000;
+          user[0].paidVidIds.push(17);
           const updatedUser = await user[0].save();
           console.log(updatedUser);
         } else if (buyRange === "only_purchased_ones") {
